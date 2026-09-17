@@ -1,0 +1,44 @@
+name = "aplo-audio"
+pages_build_output_dir = "."
+compatibility_date = "2024-09-23"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "aplo-db"
+database_id = "d1148093-28f3-412e-94d2-a53af3ff0f75"
+
+[[r2_buckets]]
+binding = "SAMPLES_BUCKET"
+bucket_name = "samples-bucket"
+
+# Required Secrets (set via Cloudflare Pages > Settings > Environment
+# Variables > Secrets — never commit these here):
+#   ADMIN_KEY      — admin panel login + admin API auth
+#   ACCESS_SECRET  — signs the sample-library access tokens issued by
+#                    /api/sample-access after a paid-order lookup, AND (as
+#                    of the order-file-delivery feature) signs the
+#                    download-link tokens emailed from
+#                    /api/admin/orders/[id]/upload.js — same secret, two
+#                    differently-shaped/typed token formats (see
+#                    functions/lib/access.js vs functions/lib/delivery.js).
+#                    Pick any long random string. Without this set, the
+#                    sample library AND order-file delivery both fail
+#                    closed (locked/unsendable, even for paid buyers).
+#   AUTH_SECRET    — separate from ACCESS_SECRET. Signs magic-link client
+#                    identity tokens (functions/lib/clientAuth.js) and
+#                    hashes the 6-digit sign-in codes stored in
+#                    auth_codes.code_hash. Without this set, /api/auth/*
+#                    and /api/client-profile fail closed. Pick any long
+#                    random string, different from ACCESS_SECRET.
+#   PING_SECRET    — Gumroad Ping shared secret
+#   BREVO_API_KEY  — for order-confirmation emails, order-file delivery
+#                    emails, AND magic-link sign-in codes
+#                    (functions/lib/email.js — Brevo transactional API)
+#   FROM_EMAIL     — sender address for Brevo, e.g.
+#                    "APLO Audio <hello@gmail.com>" (no domain
+#                    verification needed)
+#   ADMIN_EMAIL    — OPTIONAL. Where client-portal revision-request
+#                    notifications get sent (functions/api/portal/orders/
+#                    [id]/revision.js). If unset, requests are still
+#                    recorded in the revision_requests table — you just
+#                    won't get an email nudge and have to check there.

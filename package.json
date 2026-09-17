@@ -1,0 +1,12 @@
+{
+  "name": "aplo-audio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import-samples": "node scripts/import-samples.mjs",
+    "send-license": "node scripts/send-license.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

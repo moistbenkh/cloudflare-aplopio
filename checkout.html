@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order — ΑΠΛΟ Audio</title>
+<meta name="description" content="Tell us your brand, vibe and ad length. We'll start on your AI ad music the same day.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Raleway:wght@400&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <svg class="mark" viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="11" fill="#000000"/><text x="12" y="16.5" text-anchor="middle" font-family="'Inter',ui-sans-serif,system-ui,sans-serif" font-size="7" font-weight="600" fill="#ffffff">ΑΠΛ</text></svg>
+      ΑΠΛΟ AUDIO
+    </a>
+    <div class="nav-links">
+      <a href="index.html#samples">Samples</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="why-aplo.html">Why ΑΠΛΟ</a>
+      <a href="the-catch.html">The Catch</a>
+      <a href="pricing.html#faq">FAQ</a>
+      <a href="portal.html">My Orders</a>
+      <a href="checkout.html" class="nav-cta">Start an order</a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">☰</button>
+  </div>
+</nav>
+
+<header class="hero" style="min-height:auto;">
+  <div class="wrap hero-inner" style="padding:56px 0 40px;">
+    <div class="eyebrow">ORDER BRIEF</div>
+    <h1 style="font-size:clamp(30px,4.5vw,44px);">Tell us the brand. We'll bring the sound.</h1>
+    <p class="lede">Fill this in, then pay through Gumroad. You'll get a reply within 2 minutes during working hours.</p>
+  </div>
+</header>
+
+<main>
+  <section style="padding-top:0;">
+    <div class="wrap" style="display:grid; grid-template-columns: 1.4fr 1fr; gap:32px; align-items:start;">
+
+      <form id="checkout-form" novalidate>
+        <div id="resume-banner" class="hint" style="display:none; background:#f0f0f0; border:1px solid var(--color-obsidian); border-radius:0; padding:12px 14px; margin-bottom:18px;">
+          Welcome back — we found an order in progress and are checking your payment status.
+          Not you, or starting over? <a href="#" id="resume-reset" style="color:inherit; text-decoration:underline;">Start a new order</a>.
+        </div>
+        <div class="field">
+          <label for="tier-select">Tier</label>
+          <select id="tier-select" name="tier">
+            <option value="express">AI Express — $50 (24hr delivery)</option>
+            <option value="custom">Custom by the Producer — $200 (3–5 day delivery)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="client-email">Email</label>
+          <input id="client-email" name="email" type="email" required autocomplete="email">
+
+          <div id="send-code-row" style="display:none; margin-top:10px;">
+            <button type="button" id="send-code-btn" class="btn btn-secondary">Send me a code</button>
+          </div>
+
+          <div id="code-entry" style="display:none; margin-top:12px;">
+            <label for="auth-code">Enter the 6-digit code we emailed you</label>
+            <input id="auth-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">
+            <div style="display:flex; gap:10px; align-items:center; margin-top:10px;">
+              <button type="button" id="verify-code-btn" class="btn btn-primary">Verify</button>
+              <a href="#" id="resend-code-link" style="font-size:13px; color:inherit; text-decoration:underline;">Resend code</a>
+            </div>
+            <p id="auth-msg" class="hint" style="display:none;"></p>
+          </div>
+        </div>
+
+        <div id="returning-client-summary" class="hint" style="display:none; background:#f0f0f0; border:1px solid var(--color-obsidian); border-radius:0; padding:12px 14px; margin-bottom:18px;">
+          Welcome back, <span id="rc-name"></span> — <span id="rc-brand"></span>.
+          <a href="#" id="rc-edit" style="color:inherit; text-decoration:underline;">Edit</a> ·
+          <a href="#" id="rc-not-you" style="color:inherit; text-decoration:underline;">Not you?</a>
+        </div>
+
+        <div id="detail-fields">
+          <div class="field">
+            <label for="client-name">Your name</label>
+            <input id="client-name" name="name" type="text" required autocomplete="name">
+          </div>
+
+          <div class="field">
+            <label for="brand-name">Brand / agency</label>
+            <input id="brand-name" name="brand" type="text" required placeholder="Who's this ad for?">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="vibe-notes">Vibe / reference</label>
+          <textarea id="vibe-notes" name="vibe" required placeholder="Describe the mood, or drop a reference track / artist"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block"><span class="led"></span>Confirm brief &amp; get payment link</button>
+        <p class="hint">Payment happens on the next step, through Gumroad — nothing is charged by submitting this form.</p>
+      </form>
+
+      <aside class="order-card">
+        <div class="eyebrow" style="margin-bottom:14px;">ORDER SUMMARY</div>
+        <div class="order-line"><span class="dim">Vibe on file</span><span id="summary-vibe">—</span></div>
+        <div class="order-line"><span class="dim">Reply time</span><span>Under 2 min</span></div>
+        <div class="order-total"><span>Total due</span><span id="summary-total">See tier</span></div>
+
+        <div id="pay-block" hidden>
+          <p class="hint" style="margin-top:18px;">Brief captured. Pay to lock your delivery window:</p>
+          <div class="pay-row">
+            <a id="gumroad-pay-btn" class="btn btn-primary btn-block" href="https://gumroad.com" target="_blank" rel="noopener">Pay with Gumroad</a>
+          </div>
+          <p id="payment-status-msg" class="hint" style="margin-top:12px; display:none;"></p>
+          <div id="confirm-paid-wrap" style="display:none; margin-top:12px;">
+            <button id="confirm-paid-btn" class="btn btn-secondary btn-block">&#10003; I've paid &mdash; confirm my order</button>
+            <p id="confirm-paid-msg" class="hint" style="margin-top:8px; display:none;"></p>
+          </div>
+          <p class="hint" style="margin-top:10px;">After paying on Gumroad, come back here and confirm. This page will keep checking automatically — you don't have to stay on it, but don't close it until you see confirmation.</p>
+        </div>
+
+        <div id="pay-success" hidden>
+          <p class="hint" style="margin-top:18px; color:var(--color-obsidian);">Payment received — you're confirmed. We'll reply within 2 minutes during working hours.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <a href="index.html" class="brand">
+        <svg class="mark" viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="11" fill="#000000"/><text x="12" y="16.5" text-anchor="middle" font-family="'Inter',ui-sans-serif,system-ui,sans-serif" font-size="7" font-weight="600" fill="#ffffff">ΑΠΛ</text></svg>
+        ΑΠΛΟ AUDIO
+      </a>
+      <div class="footer-links">
+        <a href="index.html#samples">Samples</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="why-aplo.html">Why ΑΠΛΟ</a>
+        <a href="checkout.html">Order</a>
+      <a href="pricing.html#faq">FAQ</a>
+      </div>
+    </div>
+    <div class="footer-meta">&copy; <span id="year"></span> ΑΠΛΟ AUDIO &nbsp;&middot;&nbsp; <a href="privacy.html" style="color:inherit;">Privacy</a> &nbsp;&middot;&nbsp; <a href="terms.html" style="color:inherit;">Terms</a></div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// pre-select tier from ?tier=express|custom and reflect price in summary
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const tier = params.get('tier');
+  const select = document.getElementById('tier-select');
+  const total = document.getElementById('summary-total');
+  const PRICES = { express: '$50', custom: '$200' };
+  function reflect(){
+    total.textContent = PRICES[select.value] || 'See tier';
+  }
+  if(tier === 'custom' || tier === 'express'){ select.value = tier; }
+  reflect();
+  select.addEventListener('change', reflect);
+})();
+</script>
+</body>
+</html>

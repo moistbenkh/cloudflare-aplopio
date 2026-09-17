@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — ΑΠΛΟ Audio</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Raleway:wght@400&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  .admin-wrap{ max-width:1080px; margin:0 auto; padding:48px 24px 80px; }
+  .admin-tabs{ display:flex; gap:4px; margin-bottom:28px; border-bottom:1px solid var(--line); }
+  .admin-tab{ padding:10px 18px; font-size:14px; cursor:pointer; border:none; background:none; color:var(--color-felt-gray); border-bottom:2px solid transparent; margin-bottom:-1px; display:flex; align-items:center; gap:7px; }
+  .admin-tab.active{ color:var(--paper); border-bottom-color:var(--color-obsidian); }
+  .admin-panel{ display:none; }
+  .admin-panel.active{ display:block; }
+
+  /* ── Dashboard ─────────────────────────────────────────────────────── */
+  .dash-section{ margin-bottom:36px; }
+  .dash-section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
+  .dash-section-head h3{ margin:0; font-size:14px; letter-spacing:.04em; text-transform:uppercase; color:var(--color-felt-gray); font-weight:600; }
+  .dash-range{ display:flex; gap:4px; }
+  .dash-range button{ padding:5px 11px; font-size:12px; border-radius:6px; border:1px solid var(--line); background:transparent; color:var(--color-felt-gray); cursor:pointer; }
+  .dash-range button.active{ color:var(--color-obsidian); border-color:var(--color-obsidian); }
+
+  .stat-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px; }
+  .stat-card{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px; }
+  .stat-card .stat-value{ font-family:var(--font-display); font-size:26px; color:var(--paper); font-weight:600; line-height:1.1; }
+  .stat-card .stat-label{ font-size:12px; color:var(--color-felt-gray); margin-top:6px; letter-spacing:.02em; }
+  .stat-card.accent .stat-value{ color:var(--color-obsidian); }
+  .stat-card.accent-2 .stat-value{ color:var(--signal-2); }
+
+  .dash-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:16px; }
+  @media (max-width:760px){ .dash-grid{ grid-template-columns:1fr; } }
+  .dash-card{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:20px 22px; }
+  .dash-card h4{ margin:0 0 16px; font-size:13px; letter-spacing:.04em; text-transform:uppercase; color:var(--color-felt-gray); font-weight:600; }
+
+  /* Simple CSS bar chart — no external chart library needed */
+  .bar-chart{ display:flex; align-items:flex-end; gap:3px; height:110px; margin-bottom:6px; }
+  .bar-chart .bar{ flex:1; background:var(--signal-dim); border-radius:2px 2px 0 0; min-height:2px; position:relative; transition:background .12s ease; }
+  .bar-chart .bar:hover{ background:var(--signal); }
+  .bar-chart .bar:hover::after{
+    content:attr(data-tip); position:absolute; bottom:100%; left:50%; transform:translateX(-50%);
+    background:var(--ink); border:1px solid var(--line); color:var(--paper); font-size:11px;
+    padding:4px 7px; border-radius:5px; white-space:nowrap; margin-bottom:4px; pointer-events:none; z-index:5;
+  }
+  .bar-chart-labels{ display:flex; justify-content:space-between; font-size:10.5px; color:var(--color-felt-gray); }
+
+  .rank-list{ list-style:none; margin:0; padding:0; }
+  .rank-list li{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .rank-list li:last-child{ border-bottom:none; }
+  .rank-list .rank-n{ color:var(--color-felt-gray); font-family:var(--font-mono); font-size:11px; width:16px; flex-shrink:0; }
+  .rank-list .rank-label{ flex:1; min-width:0; color:var(--paper); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rank-list .rank-value{ color:var(--color-felt-gray); font-family:var(--font-mono); font-size:12px; flex-shrink:0; }
+  .rank-list .rank-bar-track{ position:absolute; }
+
+  .instr-table{ width:100%; border-collapse:collapse; font-size:13px; }
+  .instr-table th{ text-align:left; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--color-felt-gray); font-weight:600; padding:0 10px 10px 0; border-bottom:1px solid var(--line); }
+  .instr-table td{ padding:10px 10px 10px 0; border-bottom:1px solid var(--line); color:var(--paper); vertical-align:middle; }
+  .instr-table tr:last-child td{ border-bottom:none; }
+  .instr-table .completion-track{ width:70px; height:5px; border-radius:3px; background:var(--line); overflow:hidden; display:inline-block; vertical-align:middle; margin-right:8px; }
+  .instr-table .completion-fill{ height:100%; background:var(--signal-2); }
+  .dash-empty{ color:var(--color-felt-gray); font-size:13px; }
+  .dash-note{ font-size:11.5px; color:var(--color-felt-gray); margin-top:14px; line-height:1.5; }
+
+  /* Order status filter pills (Orders tab) */
+  .filter-pills{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .filter-pill{ padding:6px 14px; font-size:13px; border-radius:20px; border:1px solid var(--line); background:transparent; color:var(--color-felt-gray); cursor:pointer; }
+  .filter-pill.active{ color:var(--color-obsidian); border-color:var(--color-obsidian); }
+  .sample-form{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:24px; margin-bottom:24px; }
+  .sample-form label{ display:block; font-size:13px; color:var(--color-felt-gray); margin-bottom:6px; }
+  .sample-form input, .sample-form select{ width:100%; padding:10px 14px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--paper); font-size:14px; margin-bottom:14px; box-sizing:border-box; }
+  .sample-form .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .sample-row{ display:flex; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:12px 16px; margin-bottom:10px; gap:12px; flex-wrap:wrap; }
+  .sample-row-info{ flex:1; min-width:0; }
+  .sample-row-title{ font-size:15px; color:var(--paper); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sample-row-meta{ font-size:12px; color:var(--color-felt-gray); margin-top:3px; }
+  .key-gate{ max-width:420px; margin:80px auto; text-align:center; }
+  .key-gate input{ width:100%; padding:12px 16px; border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--paper); font-size:15px; margin:16px 0; }
+  .order-card{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:20px; margin-bottom:16px; }
+  .order-top{ display:flex; justify-content:space-between; align-items:start; gap:12px; flex-wrap:wrap; }
+  .order-badge{ font-size:11px; letter-spacing:.06em; padding:4px 10px; border-radius:999px; border:1px solid var(--line); text-transform:uppercase; }
+  .badge-pending{ color:#f5a623; border-color:#f5a623; }
+  .badge-paid{ color:#4ade80; border-color:#4ade80; }
+  .badge-delivered{ color:#60a5fa; border-color:#60a5fa; }
+  .order-field{ font-size:14px; margin-top:6px; color:var(--paper); opacity:.85; }
+  .order-field b{ opacity:1; }
+  .order-actions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+  .order-actions button{ padding:8px 14px; border-radius:8px; border:1px solid var(--line); background:transparent; color:var(--paper); font-size:13px; cursor:pointer; }
+  .order-actions button:hover{ border-color:var(--color-obsidian); color:var(--color-obsidian); }
+  .order-files{ margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
+  .order-files-title{ font-size:12px; letter-spacing:.04em; color:var(--color-felt-gray); text-transform:uppercase; margin-bottom:8px; }
+  .order-file-row{ display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:8px 12px; margin-bottom:6px; font-size:13px; }
+  .order-file-row .fname{ color:var(--paper); }
+  .order-file-row .flabel{ color:var(--color-felt-gray); font-size:11px; margin-left:6px; }
+  .order-file-row button{ background:none; border:none; color:var(--color-felt-gray); font-size:12px; cursor:pointer; }
+  .order-file-row button:hover{ color:#e05c1a; }
+  .file-upload-row{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:center; }
+  .file-upload-row input[type="text"]{ flex:1; min-width:140px; padding:8px 12px; border-radius:6px; border:1px solid var(--line); background:var(--bg); color:var(--paper); font-size:13px; }
+  .file-upload-row input[type="file"]{ flex:2; min-width:180px; font-size:12px; color:var(--color-felt-gray); }
+  .file-upload-row button{ padding:8px 14px; border-radius:6px; border:1px solid var(--signal); background:transparent; color:var(--color-obsidian); font-size:13px; cursor:pointer; white-space:nowrap; }
+  .file-upload-row button:hover{ background:var(--signal); color:#000; }
+  .file-upload-row button:disabled{ opacity:.5; cursor:default; }
+  .order-license{ margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
+  .order-license .generate-license-btn{ padding:8px 14px; border-radius:6px; border:1px solid var(--signal); background:transparent; color:var(--color-obsidian); font-size:13px; cursor:pointer; white-space:nowrap; }
+  .order-license .generate-license-btn:hover{ background:var(--signal); color:#000; }
+  .order-license .generate-license-btn:disabled{ opacity:.5; cursor:default; }
+  .order-license .license-status{ margin:8px 0 0; font-size:12px; color:var(--color-felt-gray); }
+  .order-license a{ color:var(--color-obsidian); }
+  .file-upload-status{ font-size:12px; margin-top:6px; color:var(--color-felt-gray); }
+
+  /* Sample admin row buttons */
+  .sa-btn{ padding:6px 12px; border-radius:6px; border:1px solid var(--line); background:transparent; font-size:12px; cursor:pointer; }
+  .sa-btn-dim{ color:var(--color-felt-gray); }
+  .sa-btn-dim:hover{ color:var(--paper); border-color:var(--paper); }
+  .sa-btn-signal{ color:var(--color-obsidian); border-color:var(--color-obsidian); }
+  .sa-btn-signal:hover{ background:var(--signal); color:#000; }
+
+  /* Edit modal */
+  #edit-modal{
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,.7);
+    z-index:1000; align-items:center; justify-content:center; padding:16px;
+  }
+  .edit-modal-box{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:28px; width:100%; max-width:560px; max-height:90vh; overflow-y:auto;
+  }
+  .edit-modal-box h3{ margin:0 0 18px; font-size:16px; }
+  .edit-modal-box label{ display:block; font-size:13px; color:var(--color-felt-gray); margin-bottom:5px; }
+  .edit-modal-box input, .edit-modal-box select{
+    width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--line);
+    background:var(--bg); color:var(--paper); font-size:14px; margin-bottom:14px; box-sizing:border-box;
+  }
+  .edit-modal-box .row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .edit-section{ border-top:1px solid var(--line); padding-top:18px; margin-top:18px; }
+  .edit-section h4{ font-size:13px; letter-spacing:.05em; text-transform:uppercase; color:var(--color-felt-gray); margin:0 0 12px; }
+  .edit-upload-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px; }
+  .edit-upload-row input[type="file"]{ flex:1; min-width:160px; font-size:12px; color:var(--color-felt-gray); }
+  .edit-upload-row input[type="text"]{ flex:1; min-width:120px; padding:7px 10px; border-radius:6px; border:1px solid var(--line); background:var(--bg); color:var(--paper); font-size:13px; }
+  .edit-upload-row button{ padding:7px 14px; border-radius:6px; border:1px solid var(--signal); color:var(--color-obsidian); background:transparent; font-size:13px; cursor:pointer; white-space:nowrap; }
+  .edit-upload-row button:hover{ background:var(--signal); color:#000; }
+  .edit-hint{ font-size:12px; color:var(--color-felt-gray); margin:0 0 10px; }
+  .modal-actions{ display:flex; gap:10px; margin-top:20px; }
+  .modal-actions button{ padding:9px 20px; border-radius:8px; font-size:14px; cursor:pointer; border:1px solid var(--line); background:transparent; color:var(--paper); }
+  .modal-actions .btn-primary{ border-color:var(--color-obsidian); color:var(--color-obsidian); }
+  .modal-actions .btn-primary:hover{ background:var(--signal); color:#000; }
+</style>
+</head>
+<body>
+
+<div id="key-gate" class="key-gate">
+  <h2>Admin access</h2>
+  <p class="hint">Enter your admin key to view orders.</p>
+  <input id="key-input" type="password" placeholder="Admin key" autocomplete="off">
+  <button id="key-submit" class="btn btn-primary btn-block">View orders</button>
+</div>
+
+<div id="admin-content" class="admin-wrap" hidden>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2 style="margin:0;">ΑΠΛΟ Admin</h2>
+    <button id="logout-btn" class="btn btn-secondary" style="padding:8px 16px; font-size:13px;">Log out</button>
+  </div>
+
+  <div class="admin-tabs" id="main-tabs">
+    <button class="admin-tab active" data-tab="dashboard">Dashboard</button>
+    <button class="admin-tab" data-tab="orders">Orders</button>
+    <button class="admin-tab" data-tab="samples">Sample Library</button>
+  </div>
+
+  <!-- Dashboard panel -->
+  <div id="panel-dashboard" class="admin-panel active">
+    <div class="dash-section-head">
+      <h3>Overview</h3>
+      <div class="dash-range" id="dash-range">
+        <button data-days="7">7d</button>
+        <button data-days="30" class="active">30d</button>
+        <button data-days="90">90d</button>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="stat-grid" id="dash-order-stats">
+        <div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Loading…</div></div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="stat-grid" id="dash-traffic-stats"></div>
+    </div>
+
+    <div class="dash-section dash-grid">
+      <div class="dash-card">
+        <h4>Site traffic</h4>
+        <div id="dash-chart"><p class="dash-empty">Loading…</p></div>
+      </div>
+      <div class="dash-card">
+        <h4>Top pages</h4>
+        <ul class="rank-list" id="dash-top-pages"><li class="dash-empty">Loading…</li></ul>
+      </div>
+    </div>
+
+    <div class="dash-section dash-grid">
+      <div class="dash-card" style="grid-column:1 / -1;">
+        <h4>Most played instrumentals</h4>
+        <div id="dash-instrumentals"><p class="dash-empty">Loading…</p></div>
+        <p class="dash-note">Avg. listen and completion are measured from actual preview playback on the Instrumentals and Samples pages — not just click count.</p>
+      </div>
+    </div>
+
+    <div class="dash-section dash-grid">
+      <div class="dash-card">
+        <h4>Where visitors come from</h4>
+        <ul class="rank-list" id="dash-referrers"><li class="dash-empty">Loading…</li></ul>
+      </div>
+      <div class="dash-card">
+        <h4>Orders needing attention</h4>
+        <ul class="rank-list" id="dash-attention"><li class="dash-empty">Loading…</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orders panel -->
+  <div id="panel-orders" class="admin-panel">
+    <div class="dash-section-head" style="margin-bottom:16px;">
+      <h3 style="text-transform:none;font-size:15px;color:var(--paper);">All orders</h3>
+      <input id="order-search" type="text" placeholder="Search name, email, brand…"
+             style="padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--paper);font-size:13px;min-width:220px;">
+    </div>
+    <div class="filter-pills" id="order-filter-tabs">
+      <button class="filter-pill active" data-filter="all">All</button>
+      <button class="filter-pill" data-filter="pending">Pending</button>
+      <button class="filter-pill" data-filter="paid">Paid</button>
+      <button class="filter-pill" data-filter="delivered">Delivered</button>
+    </div>
+    <p id="order-status" class="hint">Loading…</p>
+    <div id="order-list"></div>
+  </div>
+
+  <!-- Sample library panel -->
+  <div id="panel-samples" class="admin-panel">
+    <div class="sample-form">
+      <h3 style="margin:0 0 18px;font-size:16px;">Add a sample</h3>
+      <p class="hint" style="margin-bottom:16px;">Choose a file below to upload it straight to R2 and register it in one step. To add a cover image or stems to a sample, click <strong>Edit</strong> on any registered sample below.</p>
+
+      <label>Audio file (mp3 / wav / m4a / aif / flac, 100MB max)</label>
+      <input id="s-file" type="file" accept=".mp3,.wav,.m4a,.aif,.aiff,.flac,audio/*">
+
+      <label>Track title</label>
+      <input id="s-title" type="text" placeholder="e.g. Golden Hour">
+
+      <div class="row">
+        <div>
+          <label>Genre (optional)</label>
+          <input id="s-genre" type="text" placeholder="e.g. afrobeats">
+        </div>
+        <div>
+          <label>BPM (optional)</label>
+          <input id="s-bpm" type="number" placeholder="e.g. 100">
+        </div>
+      </div>
+
+      <label>R2 key — only needed if you didn't choose a file above (full path already in the bucket)</label>
+      <input id="s-r2key" type="text" placeholder="audio/ai/golden-hour.mp3">
+
+      <label>Project file available for revisions?</label>
+      <select id="s-revisable">
+        <option value="1">Yes — revisable</option>
+        <option value="0">No — stems/project file lost</option>
+      </select>
+
+      <button id="s-submit" class="btn btn-primary">Add sample</button>
+      <p id="s-status" class="hint" style="margin-top:12px;"></p>
+    </div>
+
+    <h3 style="font-size:15px;margin-bottom:12px;">Registered samples</h3>
+    <div id="sample-admin-list"><p class="hint">Loading…</p></div>
+  </div>
+</div>
+
+<!-- Edit sample modal -->
+<div id="edit-modal" hidden role="dialog" aria-modal="true" aria-label="Edit sample">
+  <div class="edit-modal-box">
+    <h3>Edit sample</h3>
+    <input id="edit-sample-id" type="hidden">
+
+    <label>Track title</label>
+    <input id="edit-title" type="text" placeholder="e.g. Golden Hour">
+
+    <div class="row">
+      <div>
+        <label>Genre</label>
+        <input id="edit-genre" type="text" placeholder="e.g. afrobeats">
+      </div>
+      <div>
+        <label>BPM</label>
+        <input id="edit-bpm" type="number" placeholder="e.g. 100">
+      </div>
+    </div>
+
+    <label>Project file / revisable?</label>
+    <select id="edit-revisable">
+      <option value="1">Yes — revisable</option>
+      <option value="0">No — stems/project file lost</option>
+    </select>
+
+    <p id="edit-status" class="hint" style="margin:0 0 4px;"></p>
+    <button id="edit-save" class="btn btn-primary" style="width:100%;">Save metadata</button>
+
+    <!-- Cover image section -->
+    <div class="edit-section">
+      <h4>Cover image</h4>
+      <p class="edit-hint">Upload a JPG, PNG, or WebP image (10MB max), or generate a quick placeholder. Either way, this appears on each sample card in the library — a sample never ships with a blank card.</p>
+      <img id="edit-cover-preview" alt="" style="display:block; width:160px; height:70px; object-fit:cover; border-radius:6px; border:1px solid var(--line); margin-bottom:10px; background:var(--bg);">
+      <div class="edit-upload-row">
+        <input id="edit-cover" type="file" accept=".jpg,.jpeg,.png,.webp,.gif,image/*">
+        <button id="edit-cover-upload">Upload cover</button>
+        <button id="edit-cover-generate" type="button">Generate cover</button>
+      </div>
+      <p class="edit-hint" style="margin:0 0 6px;">"Generate cover" makes a small placeholder graphic from the track's title — good enough to fill the card until you have real artwork.</p>
+      <p id="edit-cover-status" class="hint" style="margin:0;"></p>
+    </div>
+
+    <!-- Stems section -->
+    <div class="edit-section">
+      <h4>Stems</h4>
+      <p class="edit-hint">Stems are extra audio files (Drums, Melody, Bass, etc.) you can bundle together to send clients. Supported: mp3, wav, m4a, aif, flac — 100MB max each.</p>
+
+      <div id="edit-stem-list" style="margin-bottom:12px;"></div>
+
+      <div class="edit-upload-row">
+        <input id="edit-stem-label" type="text" placeholder="Label (e.g. Drums)">
+        <input id="edit-stem-file" type="file" accept=".mp3,.wav,.m4a,.aif,.aiff,.flac,audio/*">
+        <button id="edit-stem-upload">Add stem</button>
+      </div>
+      <p id="edit-stem-status" class="hint" style="margin:0;"></p>
+    </div>
+
+    <div class="modal-actions">
+      <button id="edit-modal-close" class="btn-primary">Done</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

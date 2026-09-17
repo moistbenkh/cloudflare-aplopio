@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Iridescent: sage green → amber → oxblood -->
+    <linearGradient id="iridescentBase" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="rgb(160,224,171)"/>
+      <stop offset="50%"  stop-color="rgb(255,172,46)"/>
+      <stop offset="100%" stop-color="rgb(165,45,37)"/>
+    </linearGradient>
+    <radialGradient id="glowGreen" cx="15%" cy="40%" r="55%">
+      <stop offset="0%"   stop-color="rgb(160,224,171)" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="rgb(160,224,171)" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowAmber" cx="55%" cy="60%" r="40%">
+      <stop offset="0%"   stop-color="rgb(255,172,46)" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="rgb(255,172,46)" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowOxblood" cx="90%" cy="30%" r="50%">
+      <stop offset="0%"   stop-color="rgb(165,45,37)" stop-opacity="0.40"/>
+      <stop offset="100%" stop-color="rgb(165,45,37)" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Dark obsidian base -->
+  <rect width="1600" height="900" fill="#000000"/>
+  <!-- Iridescent fluid wash -->
+  <rect width="1600" height="900" fill="url(#iridescentBase)" opacity="0.28"/>
+  <!-- Atmospheric radial glows -->
+  <ellipse cx="240"  cy="360" rx="700" ry="550" fill="url(#glowGreen)"/>
+  <ellipse cx="880"  cy="540" rx="640" ry="480" fill="url(#glowAmber)"/>
+  <ellipse cx="1440" cy="270" rx="700" ry="500" fill="url(#glowOxblood)"/>
+</svg>

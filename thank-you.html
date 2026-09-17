@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order Confirmed — ΑΠΛΟ Audio</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Raleway:wght@400&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  .confirm-wrap{
+    min-height:80vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:64px 24px;
+  }
+  .confirm-card{
+    background:#f5f5f5;
+    border:1px solid var(--color-obsidian);
+    border-radius:var(--radius-none);
+    padding:48px 40px;
+    max-width:520px;
+    width:100%;
+    text-align:center;
+  }
+  .confirm-icon{
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background:rgba(85,214,190,0.12);
+    border:1.5px solid var(--color-obsidian);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 24px;
+  }
+  .confirm-icon svg{ width:26px; height:26px; stroke:var(--color-obsidian); }
+  .confirm-card h1{
+    font-size:clamp(22px,4vw,30px);
+    margin-bottom:16px;
+  }
+  .confirm-card p{
+    color:var(--color-felt-gray);
+    font-size:15px;
+    line-height:1.6;
+    margin-bottom:12px;
+  }
+  .confirm-card p strong{ color:var(--color-paper); }
+  .divider{
+    border:none;
+    border-top:1px solid var(--color-obsidian);
+    margin:28px 0;
+  }
+  .what-next{
+    text-align:left;
+    background:#f0f0f0;
+    border-radius:0;
+    padding:20px 24px;
+  }
+  .what-next .eyebrow{ margin-bottom:14px; }
+  .what-next ul{ display:flex; flex-direction:column; gap:10px; }
+  .what-next li{
+    display:flex;
+    gap:10px;
+    font-size:14px;
+    color:var(--color-felt-gray);
+    line-height:1.5;
+  }
+  .what-next li::before{
+    content:'→';
+    color:var(--color-obsidian);
+    flex-shrink:0;
+    font-family:var(--font-mono);
+  }
+  .what-next li strong{ color:var(--color-paper); }
+  .back-link{
+    display:inline-block;
+    margin-top:28px;
+    font-size:13.5px;
+    color:var(--color-felt-gray);
+    text-decoration:underline;
+    text-underline-offset:3px;
+  }
+  .back-link:hover{ color:var(--color-paper); }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <svg class="mark" viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="11" fill="#000000"/><text x="12" y="16.5" text-anchor="middle" font-family="'Inter',ui-sans-serif,system-ui,sans-serif" font-size="7" font-weight="600" fill="#ffffff">ΑΠΛ</text></svg>
+      ΑΠΛΟ AUDIO
+    </a>
+    <div class="nav-links">
+      <a href="index.html#samples">Samples</a>
+      <a href="pricing.html">Pricing</a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">☰</button>
+  </div>
+</nav>
+
+<div class="confirm-wrap">
+  <div class="confirm-card">
+    <div class="confirm-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12l5 5L20 7"/>
+      </svg>
+    </div>
+
+    <div class="eyebrow center" style="justify-content:center; margin-bottom:16px;">PAYMENT CONFIRMED</div>
+    <h1>You're locked in.</h1>
+    <p>Your order is confirmed and your brief is on file. <strong>Check your inbox</strong> — you'll get a reply within 2 minutes during working hours.</p>
+    <p>If you don't see an email, check your spam folder.</p>
+
+    <hr class="divider">
+
+    <div class="what-next">
+      <div class="eyebrow">WHAT HAPPENS NEXT</div>
+      <ul>
+        <li><span>We review your brief and get to work immediately.</span></li>
+        <li><span><strong>AI Express:</strong> tracks delivered within 24 hours.</span></li>
+        <li><span><strong>Custom:</strong> we'll reach out to schedule your producer call.</span></li>
+        <li><span>All files arrive with a full commercial license — ready to drop into your campaign.</span></li>
+      </ul>
+    </div>
+
+    <a href="samples.html" class="btn btn-primary btn-block" style="margin-top:28px;">Browse the sample library →</a>
+    <a href="index.html" class="back-link">← Back to ΑΠΛΟ Audio</a>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

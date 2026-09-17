@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instrumentals — ΑΠΛΟ Audio</title>
+<meta name="description" content="Browse and buy instrumentals from the ΑΠΛΟ Audio catalog. Instant download after purchase.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Raleway:wght@400&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  /* Flex-based grid (not CSS grid): 1 col on small screens, 2 on medium,
+     3 on wide, 4 on extra-wide. Using flexbox + justify-content:center
+     instead of grid means an incomplete last row (e.g. 5 tracks in a
+     4-column layout) stays centered instead of hugging the left edge. */
+  .instr-grid{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:14px;
+    margin-top:24px;
+    max-width:100%;
+  }
+  @media(min-width:900px){
+    .instr-grid{ gap:16px; }
+  }
+
+  .instr-card{
+    background:#f5f5f5; border:1px solid var(--color-obsidian); border-radius:var(--radius-none);
+    padding:18px; display:flex; flex-direction:column; gap:12px;
+    overflow:hidden; /* clips .instr-cover's negative margin to the card's rounded corners */
+    /* flex-basis math keeps columns matching the old grid breakpoints;
+       min-width:0 stops long titles/genres from forcing a card wider
+       than its column, which is what was pushing cards past the
+       viewport edge on mobile. */
+    flex:1 1 100%; max-width:100%; min-width:0; box-sizing:border-box;
+  }
+  @media(min-width:540px){
+    .instr-card{ flex-basis:calc(50% - 7px); max-width:calc(50% - 7px); }
+  }
+  @media(min-width:900px){
+    .instr-card{ flex-basis:calc(33.333% - 11px); max-width:calc(33.333% - 11px); }
+  }
+  @media(min-width:1200px){
+    .instr-card{ flex-basis:calc(25% - 12px); max-width:calc(25% - 12px); }
+  }
+
+  /* Compact cover slot — bleeds to the card's edges via negative margin so
+     it doesn't need its own border-radius math. Kept short (76px) on
+     purpose: this is meant to fill the blank space at the top of the
+     card, not turn it into a big artwork tile. */
+  .instr-cover{
+    height:76px; margin:-18px -18px 0;
+    background:linear-gradient(135deg, #22262b, #16181b);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  .instr-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .instr-cover-fallback{
+    font-size:13px; font-weight:700; color:var(--color-paper); opacity:.75;
+    text-align:center; padding:0 16px; max-width:100%;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  .instr-title{ font-size:15px; font-weight:600; color:var(--color-paper); line-height:1.35; overflow-wrap:anywhere; word-break:break-word; }
+  .instr-meta{ font-size:12.5px; color:var(--color-felt-gray); overflow-wrap:anywhere; word-break:break-word; min-height:1em; }
+  .instr-controls{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .instr-controls .instr-note{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  /* Play button — bigger tap target on mobile */
+  .instr-play{
+    width:42px; height:42px; flex:none;
+    border-radius:50%; border:1px solid var(--color-obsidian);
+    background:transparent; color:var(--color-paper);
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:border-color .15s, color .15s;
+  }
+  .instr-play:hover, .instr-play.is-playing{ border-color:var(--color-obsidian); color:var(--color-obsidian); }
+  .instr-play svg{ width:16px; height:16px; }
+
+  .instr-buy{
+    margin-top:auto; text-align:center;
+    padding:11px 12px; border-radius:0;
+    background:var(--color-obsidian); color:#0a0a0a;
+    font-weight:600; font-size:14px; text-decoration:none;
+    transition:opacity .15s;
+  }
+  .instr-buy:hover{ opacity:.88; }
+  .instr-note{ font-size:12px; color:var(--color-felt-gray); margin-top:2px; }
+  .instr-status{ color:var(--color-felt-gray); font-size:13.5px; margin-top:8px; }
+
+  /* Search bar: full-width inputs on mobile */
+  .instr-search{
+    display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;
+  }
+  .instr-search input, .instr-search select{
+    padding:11px 14px; border-radius:0;
+    border:1px solid var(--color-obsidian); background:#f5f5f5;
+    color:var(--color-paper); font-size:16px; /* 16px+ stops iOS Safari from auto-zooming (and knocking the layout off-center) when a field is tapped */
+    min-width:0;
+    box-sizing:border-box;
+  }
+  .instr-search input{ flex:1 1 auto; width:100%; min-width:0; }
+  .instr-search select{ width:100%; min-width:0; }
+  @media(min-width:540px){
+    .instr-search select{ width:auto; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <svg class="mark" viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="11" fill="#000000"/><text x="12" y="16.5" text-anchor="middle" font-family="'Inter',ui-sans-serif,system-ui,sans-serif" font-size="7" font-weight="600" fill="#ffffff">ΑΠΛ</text></svg>
+      ΑΠΛΟ AUDIO
+    </a>
+    <div class="nav-links">
+      <a href="instrumentals.html">Instrumentals</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="why-aplo.html">Why ΑΠΛΟ</a>
+      <a href="the-catch.html">The Catch</a>
+      <a href="pricing.html#faq">FAQ</a>
+      <a href="portal.html">My Orders</a>
+      <a href="checkout.html" class="nav-cta">Start an order</a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">☰</button>
+  </div>
+</nav>
+
+<main>
+  <section class="wrap" style="padding:48px 0 80px;">
+    <h1 style="font-size:32px; margin-bottom:6px;">Instrumentals</h1>
+    <p style="color:var(--color-felt-gray); font-size:15px; max-width:560px;">
+      Every track below is $100, delivered instantly by email after checkout.
+      Preview any track before you buy.
+    </p>
+
+    <div class="instr-search">
+      <input type="text" id="instr-search" placeholder="Search title or genre…">
+      <select id="instr-genre"><option value="">All genres</option></select>
+    </div>
+
+    <p class="instr-status" id="instr-status">Loading catalog…</p>
+    <div class="instr-grid" id="instr-grid"></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <a href="index.html" class="brand">
+        <svg class="mark" viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="11" fill="#000000"/><text x="12" y="16.5" text-anchor="middle" font-family="'Inter',ui-sans-serif,system-ui,sans-serif" font-size="7" font-weight="600" fill="#ffffff">ΑΠΛ</text></svg>
+        ΑΠΛΟ AUDIO
+      </a>
+      <div class="footer-links">
+        <a href="instrumentals.html">Instrumentals</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="why-aplo.html">Why ΑΠΛΟ</a>
+        <a href="checkout.html">Order</a>
+        <a href="pricing.html#faq">FAQ</a>
+      </div>
+    </div>
+    <div class="footer-meta">&copy; <span id="year"></span> ΑΠΛΟ AUDIO &nbsp;&middot;&nbsp; <a href="privacy.html" style="color:inherit;">Privacy</a> &nbsp;&middot;&nbsp; <a href="terms.html" style="color:inherit;">Terms</a></div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="js/instrumentals.js"></script>
+</body>
+</html>
