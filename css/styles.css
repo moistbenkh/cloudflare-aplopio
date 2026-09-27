@@ -69,6 +69,24 @@
   --duration-slow: 1.25s;
   --duration-mid:  0.80s;
   --duration-fast: 0.40s;
+
+  /* Dashboard tokens — used by admin.html and portal.html.
+     These were referenced throughout both pages but never defined,
+     so every rule using them silently failed and fell back to
+     browser defaults (transparent backgrounds, invisible borders,
+     inherited text color). Defined here as a light theme consistent
+     with the rest of the site, since .panel is a light surface (#f5f5f5). */
+  --bg:      var(--color-paper);
+  --panel:   #f5f5f5;
+  --line:    rgba(0,0,0,0.14);
+  --paper:   var(--color-obsidian);
+  --ink:     var(--color-obsidian);
+  --radius:  10px;
+  --font-display: var(--font-roobert);
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --signal:     #C1741F;
+  --signal-2:   #1F7A47;
+  --signal-dim: #DCDCDC;
 }
 
 /* ── Reset ───────────────────────────────────────────────── */
@@ -320,26 +338,57 @@ main section:first-child { border-top: none; }
 }
 .btn:active { opacity: 0.85; }
 
-/* Primary: Ghost pill on dark hero */
+/* Primary: solid pill, correct default for light/white surfaces
+   (most of the site). This used to be a white-on-transparent style
+   built only for the dark hero, then got reused on white cards and
+   sections everywhere else — which made it invisible. */
 .btn-primary {
-  background: transparent;
+  background: var(--color-obsidian);
   color: var(--color-paper);
-  border-color: rgba(255,255,255,0.3);
+  border-color: var(--color-obsidian);
 }
 .btn-primary:hover {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.6);
+  background: var(--color-inkstone);
+  border-color: var(--color-inkstone);
 }
 
-/* Secondary: Ghost pill on dark hero */
+/* Secondary: outline pill, correct default for light/white surfaces */
 .btn-secondary {
   background: transparent;
-  color: rgba(255,255,255,0.75);
-  border-color: rgba(255,255,255,0.18);
+  color: var(--color-obsidian);
+  border-color: var(--color-obsidian);
 }
 .btn-secondary:hover {
+  background: var(--color-obsidian);
   color: var(--color-paper);
-  border-color: rgba(255,255,255,0.4);
+}
+
+/* On the dark hero image (and any other dark-inverse section), flip
+   both pills back to a light-on-dark treatment so they stay visible
+   there instead of turning into a solid black button on a black photo. */
+.hero .btn-primary,
+.section-dark .btn-primary {
+  background: var(--color-paper);
+  color: var(--color-obsidian);
+  border-color: var(--color-paper);
+}
+.hero .btn-primary:hover,
+.section-dark .btn-primary:hover {
+  background: transparent;
+  color: var(--color-paper);
+  border-color: rgba(255,255,255,0.6);
+}
+.hero .btn-secondary,
+.section-dark .btn-secondary {
+  background: transparent;
+  color: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.35);
+}
+.hero .btn-secondary:hover,
+.section-dark .btn-secondary:hover {
+  color: var(--color-paper);
+  border-color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.08);
 }
 
 /* Light-surface variant (overrides when on white) */
