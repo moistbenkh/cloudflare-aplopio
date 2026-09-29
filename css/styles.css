@@ -223,11 +223,46 @@ main section:first-child { border-top: none; }
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.70) 70%, #000 100%),
-    url('/img/hero-bg.svg');
+    var(--hero-img, url('/img/hero-bg.svg'));
+  background-size: cover;
+  background-position: var(--hero-pos, center);
+  background-repeat: no-repeat;
+}
+
+/* Photo backgrounds per page (set via class on the <header class="hero">) */
+.hero--studio      { --hero-img: url('/img/bg-studio.jpg');      --hero-pos: center 40%; }
+.hero--mic         { --hero-img: url('/img/bg-mic.jpg');         --hero-pos: 30% center; }
+.hero--sheet-music { --hero-img: url('/img/bg-sheet-music.jpg'); --hero-pos: center 60%; }
+.hero--turntable   { --hero-img: url('/img/bg-turntable.jpg');   --hero-pos: center 75%; }
+.hero--turntable::before { content:''; position:absolute; inset:0; background:rgba(0,0,0,0.25); z-index:1; }
+
+/* Photo band behind a normal content section (dark image, light text) */
+.section-photo {
+  position: relative;
+  color: var(--color-paper);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
+.section-photo .dim { color: rgba(255,255,255,0.75); }
+.section-photo .eyebrow { color: rgba(255,255,255,0.75); }
+.section-photo .eyebrow::before { background: rgba(255,255,255,0.75); }
+.section-photo .btn-primary { background: var(--color-paper); color: var(--color-obsidian); border-color: var(--color-paper); }
+.section-photo .btn-secondary { color: var(--color-paper); border-color: rgba(255,255,255,0.6); background: transparent; }
+.section-photo .btn-secondary:hover { background: var(--color-paper); color: var(--color-obsidian); }
+.section-photo--neon {
+  background-image: linear-gradient(rgba(0,0,0,0.72), rgba(0,0,0,0.78)), url('/img/bg-neon.jpg');
+  padding-top: 96px; padding-bottom: 96px;
+}
+/* Light photo: keep dark text, wash the image out so it stays readable */
+.section-photo--light {
+  color: var(--color-obsidian);
+  background-image: linear-gradient(rgba(255,255,255,0.78), rgba(255,255,255,0.86)), url('/img/bg-instruments.jpg');
+  background-position: center 85%;
+}
+.section-photo--light .dim { color: inherit; opacity: .75; }
+.section-photo--light .eyebrow { color: var(--color-felt-gray); }
+.section-photo--light .eyebrow::before { background: var(--color-obsidian); }
 
 
 
