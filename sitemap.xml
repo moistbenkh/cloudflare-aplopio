@@ -32,4 +32,16 @@
     <loc>https://aploaudio.pages.dev/terms</loc>
     <priority>0.3</priority>
   </url>
+  <url>
+    <loc>https://aploaudio.pages.dev/music-for-social-media-ads</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://aploaudio.pages.dev/music-for-tv-and-radio-ads</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://aploaudio.pages.dev/custom-ad-music</loc>
+    <priority>0.7</priority>
+  </url>
 </urlset>
