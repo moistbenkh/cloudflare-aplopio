@@ -112,18 +112,45 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const playButtons = document.querySelectorAll('.play-btn');
+    // Homepage samples are 30-second previews. The full files are served by
+    // /api/stream, so the cap is enforced here in time (not bytes), with a
+    // short fade-out so the cut never clicks or glitches.
+    const PREVIEW_SECONDS = 30;
+    const FADE_SECONDS = 0.8;
+
+    function fmtTime(sec) {
+        const s = Math.max(0, Math.floor(sec));
+        return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    }
+
+    function setTimeLabel(button, text) {
+        const label = button.closest('.strip-glass')?.querySelector('.strip-time');
+        if (label) label.textContent = text;
+    }
+
+    const playButtons = document.querySelectorAll('.player .play-btn');
+    const cardLabelDefault = fmtTime(PREVIEW_SECONDS);
+
+    function resetAll() {
+        playButtons.forEach(b => { resetPlayer(b); setTimeLabel(b, cardLabelDefault); });
+        if (currentAudioEl) {
+            currentAudioEl.pause();
+            currentAudioEl = null;
+        }
+    }
+
+    // The large centre button on each card just drives that card's player.
+    document.querySelectorAll('.strip-play-area .play-btn').forEach(big => {
+        big.addEventListener('click', () => {
+            big.closest('.strip')?.querySelector('.player .play-btn')?.click();
+        });
+    });
+
     playButtons.forEach(button => {
         button.addEventListener('click', () => {
             const isPlaying = button.classList.contains('is-playing');
 
-            // Reset all players
-            playButtons.forEach(resetPlayer);
-            if (currentAudioEl) {
-                currentAudioEl.pause();
-                currentAudioEl = null;
-            }
-
+            resetAll();
             if (isPlaying) return;
 
             button.classList.add('is-playing');
@@ -140,19 +167,37 @@ document.addEventListener('DOMContentLoaded', () => {
             const audioEl = new Audio(audioPath);
             currentAudioEl = audioEl;
 
-            audioEl.addEventListener('timeupdate', () => {
-                if (audioEl.duration) setFill(meterEl, audioEl.currentTime / audioEl.duration);
-            });
-            audioEl.addEventListener('ended', () => {
+            const finish = () => {
+                audioEl.pause();
                 if (currentAudioEl === audioEl) currentAudioEl = null;
                 resetPlayer(button);
+                setTimeLabel(button, cardLabelDefault);
+            };
+
+            audioEl.addEventListener('timeupdate', () => {
+                if (currentAudioEl !== audioEl) return;
+                // Cap at 30s, or the real length if the track is shorter
+                const cap = audioEl.duration
+                    ? Math.min(PREVIEW_SECONDS, audioEl.duration)
+                    : PREVIEW_SECONDS;
+                const t = audioEl.currentTime;
+
+                setFill(meterEl, t / cap);
+                setTimeLabel(button, `${fmtTime(t)} / ${fmtTime(cap)}`);
+
+                // Fade out over the last moments (volume is read-only on iOS,
+                // where the fade is skipped and the stop is simply immediate)
+                const left = cap - t;
+                if (left < FADE_SECONDS) audioEl.volume = Math.max(0, left / FADE_SECONDS);
+
+                if (t >= cap) finish();
             });
+            audioEl.addEventListener('ended', finish);
 
             audioEl.play().catch((err) => {
                 if (currentAudioEl !== audioEl) return;
                 console.error('Audio playback failed:', audioPath, err);
-                currentAudioEl = null;
-                resetPlayer(button);
+                finish();
             });
         });
     });
