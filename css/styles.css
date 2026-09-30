@@ -479,7 +479,8 @@ main section:first-child { border-top: none; }
 }
 
 /* ── Sample strips ───────────────────────────────────────── */
-.strips { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.strips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.strips > * { min-width: 0; }
 
 .strip {
   position: relative;
@@ -807,7 +808,7 @@ textarea { min-height: 110px; resize: vertical; }
   }
   .nav-links.active a { color: var(--color-obsidian); }
   .nav-toggle { display: flex; align-items: center; justify-content: center; }
-  .strips, .plans { grid-template-columns: 1fr; }
+  .strips, .plans { grid-template-columns: minmax(0, 1fr); }
   .field-row { grid-template-columns: 1fr; }
   main section[style] { padding-top: 0 !important; }
   section > .wrap[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
@@ -815,6 +816,11 @@ textarea { min-height: 110px; resize: vertical; }
 }
 
 @media (max-width: 640px) {
+  .strip { aspect-ratio: auto; min-height: 300px; max-width: 100%; }
+  .strip-play-area { inset: 0 0 auto 0; height: calc(100% - 170px); min-height: 110px; }
+  .strip-glass { padding: 14px 14px 12px; }
+  .strip-title { overflow-wrap: anywhere; }
+  .strip-time { min-width: 40px; }
   .hero { min-height: auto; padding: 28px 0 40px; }
   .hero-inner { text-align: center; padding: 24px 0 0; }
   .hero h1 { font-size: clamp(28px, 9vw, 45px); max-width: 100%; }
